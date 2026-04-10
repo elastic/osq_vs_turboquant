@@ -75,9 +75,9 @@ On x86 without NEON, the code falls back to portable scalar paths. To force-disa
 
 ## Key results (ARM NEON, d=768)
 
-### MSE distortion (relative MSE = ||x - x_hat||^2 / ||x||^2)
+### MSE distortion (relative $MSE = \|x - x_{hat}\|^2 / \|x\|^2$)
 
-| Bits | OSQ (lambda=0.1) | OSQ (lambda=1) | OSQ + Hadamard | TurboQuant |
+| Bits | OSQ ($\lambda=0.1$) | OSQ ($\lambda=1$) | OSQ + Hadamard | TurboQuant |
 |:----:|:---:|:---:|:---:|:---:|
 | 1 | 0.512 | 0.362 | 0.306 | 0.307 |
 | 2 | 0.138 | 0.118 | 0.092 | 0.092 |
@@ -96,16 +96,16 @@ OSQ with Hadamard rotation matches TurboQuant at 1-2 bits; the Lloyd-Max centroi
 
 OSQ symmetric scoring is 10-40x faster than TurboQuant. The mixed 4-1 kernel (production config: 4-bit query, 1-bit doc) runs at 14 ns/doc via bit-plane decomposition.
 
-### Production config dot-product error (1-bit doc, 4-bit query, centroid centered)
+### Production config dot-product error (1-bit doc, 4-bit query, centered)
 
 Raw dot-product error conflates multiplicative bias (ranking-irrelevant) with noise (ranking-relevant). After debiasing:
 
 - **Zero-mean data**: OSQ has 1.2-1.4x lower ranking noise than TQ @1-bit at small angles (0-10°), thanks to the anisotropic loss concentrating accuracy along the query direction.
-- **Shifted data**: Centroid centering (applied to both document and query) gives OSQ **0.001** debiased noise vs TQ @1-bit's **0.007** and TQ @4-bit's **0.006** at 0° — better ranking accuracy at less than 1/5 the storage.
+- **Shifted data**: Centering (applied to both document and query) gives OSQ **0.001** debiased noise vs TQ @1-bit's **0.007** and TQ @4-bit's **0.006** at 0° — better ranking accuracy at less than 1/5 the storage.
 
 ### Preconditioner comparison (anisotropic data, sigma ramp 1..5)
 
-**MSE (lambda=1):**
+**MSE ($\lambda=1$):**
 
 | Method | 1-bit | 2-bit | 4-bit |
 |:-------|:---:|:---:|:---:|
@@ -125,7 +125,7 @@ Hadamard's dot-product advantage (0.629 vs 0.723 on isotropic data) matches sqrt
 
 ### OSQ
 
-Uniform-grid scalar quantizer with per-vector coordinate-descent refinement. The anisotropic loss $L = (1-\lambda)(x.e)^2/\|x\|^2 + \lambda\|e\|^2` trades MSE for dot-product accuracy ($\lambda=0.1$ in production). Key optimizations:
+Uniform-grid scalar quantizer with per-vector coordinate-descent refinement. The anisotropic loss $L = (1-\lambda)(x.e)^2/\|x\|^2 + \lambda\|e\|^2$ trades MSE for dot-product accuracy ($\lambda=0.1$ in production). Key optimizations:
 
 - **Bit-plane precomputation**: 2-bit and 4-bit vectors decompose into 1-bit packed planes at quantize time, enabling dot products via AND+popcount
 - **NEON kernels**: dual-accumulator `vcntq_u8` popcount for 1-bit (7 ns), bit-plane popcount for 2-bit (14 ns), nibble multiply for 4-bit (22 ns)
