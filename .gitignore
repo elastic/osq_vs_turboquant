@@ -1,0 +1,5 @@
+# Ignore build artifacts and temporary files
+dot_angle_test
+osq_test
+preconditioner_test
+turbo_quant_test
