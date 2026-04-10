@@ -139,9 +139,9 @@ Randomized Hadamard rotation followed by Lloyd-Max optimal scalar quantization p
 
 ## Hadamard MSE experiment
 
-The test applies a randomized Walsh-Hadamard transform (zero-pad 768->1024, random sign flips, WHT, normalize) before OSQ quantization. Theory predicts MSE improves by d/d' = 768/1024 = 0.75. Empirical results:
+The test applies a randomized Walsh-Hadamard transform (zero-pad $768\rightarrow 1024$, random sign flips, WHT, normalize) before OSQ quantization. Theory predicts MSE improves by $d/d' = 768/1024 = 0.75$. Empirical results:
 
-| Bits | Measured ratio (plain/hadamard) | Theory (d'/d) |
+| Bits | Measured ratio (plain/hadamard) | Theory ($d'/d$) |
 |:----:|:---:|:---:|
 | 1 | 1.19 | 1.33 |
 | 2 | 1.28 | 1.33 |
